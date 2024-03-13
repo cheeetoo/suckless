@@ -1,0 +1,18 @@
+[submodule "slock"]
+	path = slock
+	url = git@github.com:cheeetoo/slock.git
+[submodule "dmenu"]
+	path = dmenu
+	url = git@github.com:cheeetoo/dmenu.git
+[submodule "dwm"]
+	path = dwm
+	url = git@github.com:cheeetoo/dwm.git
+[submodule "scroll"]
+	path = scroll
+	url = git@github.com:cheeetoo/scroll.git
+[submodule "slstatus"]
+	path = slstatus
+	url = git@github.com:cheeetoo/slstatus.git
+[submodule "st"]
+	path = st
+	url = git@github.com:cheeetoo/st.git
