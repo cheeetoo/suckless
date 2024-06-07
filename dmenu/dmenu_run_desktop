@@ -1,0 +1,67 @@
+#!/bin/sh
+
+cachedir=${XDG_CACHE_HOME:-"$HOME/.cache"}
+historyfile="${cachedir}/dmenu_history"
+applicationsdir="/usr/share/applications/ /var/lib/flatpak/exports/share/applications/ $HOME/.local/share/applications"
+pathscachefile="${cachedir}/dmenu_paths"
+namescachefile="${cachedir}/dmenu_names"
+
+mkdir -p "${cachedir}"
+touch "${historyfile}"
+touch "${pathscachefile}"
+touch "${namescachefile}"
+
+update_cache() {
+    > "${pathscachefile}"
+    > "${namescachefile}"
+    find -L ${applicationsdir} -type f -name "*.desktop" -print0 |
+    while IFS= read -r -d '' file; do
+        entry=$(basename "$file" .desktop)
+        echo "$entry" >> "${pathscachefile}"
+        name=$(grep '^Name=' "$file" | head -n 1 | cut -d'=' -f2)
+        if [ ! -z "$name" ]; then
+            echo "$name" >> "${namescachefile}"
+        fi
+    done
+}
+
+if [ ! -s "${pathscachefile}" ] || [ ! -s "${namescachefile}" ]; then
+    update_cache
+else
+    find ${applicationsdir} -type f -name "*.desktop" -newer "${pathscachefile}" | grep -q .
+    if [ $? -eq 0 ] || [ "$(find ${pathscachefile} -mtime +1)" ]; then
+        update_cache
+    fi
+fi
+
+declare -A options_map
+while IFS= read -r show_line && IFS= read -r res_line <&3; do
+    options_map["$show_line"]="$res_line"
+done < "${namescachefile}" 3< "${pathscachefile}"
+
+options_string=$(printf "%s\n" "${!options_map[@]}" | awk -v histfile="${historyfile}" '
+    BEGIN {
+        while ((getline < histfile) > 0) {
+            count = split($0, parts, "\t");
+            if (count == 2) {
+                history[parts[2]] += parts[1];
+            } else {
+                history[$0]++;
+            }
+        }
+    }
+    { print (history[$0] ? history[$0] : "0") "\t" $0; }
+' | sort -k1rn -k2 | cut -f2-)
+
+selected=$(echo -e "$options_string" | dmenu -i "$@")
+if [ -n "$selected" ]; then
+    echo "${options_map[$selected]}" | while read cmd; do gtk-launch "$cmd" & done
+
+    if grep -q "$selected" "$historyfile"; then
+        awk -F"\t" -v app="$selected" '$2==app { $1++ } { print $1 "\t" $2 }' "$historyfile" > "${historyfile}.tmp"
+    else
+        echo -e "1\t$selected" >> "$historyfile"
+    fi
+    mv "${historyfile}.tmp" "${historyfile}"
+fi
+
