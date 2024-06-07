@@ -11,3 +11,4 @@ install:
 
 stow:
 	stow home -t ~
+	stow Pictures -t ~/Pictures
