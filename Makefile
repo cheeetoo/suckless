@@ -13,3 +13,4 @@ stow:
 	stow home -t ~
 	stow Pictures -t ~/Pictures
 	stow config -t ~/.config
+	stow localbin -t ~/.local/bin
