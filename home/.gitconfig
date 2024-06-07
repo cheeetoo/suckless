@@ -1,0 +1,14 @@
+[user]
+	name = Finn Cairns
+	email = fjamescairns@gmail.com
+	signingkey = 8F29BDBC1977C2A8
+[credential]
+	helper = store
+[pull]
+	rebase = true
+[commit]
+	gpgsign = true
+[gpg]
+	program = gpg
+[push]
+	autoSetupRemote = true
