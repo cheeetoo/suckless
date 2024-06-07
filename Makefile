@@ -5,3 +5,4 @@ install:
 	cd slock && sudo make clean install
 	cd slstatus && sudo make clean install
 	cd st && sudo make clean install
+	stow home -t ~
