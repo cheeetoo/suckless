@@ -5,11 +5,17 @@ historyfile="${cachedir}/dmenu_history"
 applicationsdir="/usr/share/applications/ /var/lib/flatpak/exports/share/applications/ $HOME/.local/share/applications"
 pathscachefile="${cachedir}/dmenu_paths"
 namescachefile="${cachedir}/dmenu_names"
+hashcachefile="${cachedir}/dmenu_hash"
 
 mkdir -p "${cachedir}"
 touch "${historyfile}"
 touch "${pathscachefile}"
 touch "${namescachefile}"
+touch "${hashcachefile}"
+
+calculate_hash() {
+    find -L ${applicationsdir} -type f -name "*.desktop" -print0 | sort -z | xargs -0 sha1sum | sha1sum | awk '{print $1}'
+}
 
 update_cache() {
     > "${pathscachefile}"
@@ -23,15 +29,14 @@ update_cache() {
             echo "$name" >> "${namescachefile}"
         fi
     done
+    calculate_hash > "${hashcachefile}"
 }
 
-if [ ! -s "${pathscachefile}" ] || [ ! -s "${namescachefile}" ]; then
+current_hash=$(calculate_hash)
+stored_hash=$(cat "${hashcachefile}")
+
+if [ "$current_hash" != "$stored_hash" ] || [ ! -s "${pathscachefile}" ] || [ ! -s "${namescachefile}" ]; then
     update_cache
-else
-    find ${applicationsdir} -type f -name "*.desktop" -newer "${pathscachefile}" | grep -q .
-    if [ $? -eq 0 ] || [ "$(find ${pathscachefile} -mtime +1)" ]; then
-        update_cache
-    fi
 fi
 
 declare -A options_map
@@ -54,14 +59,13 @@ options_string=$(printf "%s\n" "${!options_map[@]}" | awk -v histfile="${history
 ' | sort -k1rn -k2 | cut -f2-)
 
 selected=$(echo -e "$options_string" | dmenu -i "$@")
+
 if [ -n "$selected" ]; then
     echo "${options_map[$selected]}" | while read cmd; do gtk-launch "$cmd" & done
-
     if grep -q "$selected" "$historyfile"; then
         awk -F"\t" -v app="$selected" '$2==app { $1++ } { print $1 "\t" $2 }' "$historyfile" > "${historyfile}.tmp"
+        mv "${historyfile}.tmp" "${historyfile}"
     else
         echo -e "1\t$selected" >> "$historyfile"
     fi
-    mv "${historyfile}.tmp" "${historyfile}"
 fi
-
