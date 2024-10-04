@@ -110,15 +110,6 @@ typedef struct {
  * foreground, background, cursor, reverse cursor
  */
 static const ColorScheme schemes[] = {
-    // st (dark)
-    {{"black", "red3", "green3", "yellow3", "blue2", "magenta3", "cyan3",
-      "gray90", "gray50", "red", "green", "yellow", "#5c5cff", "magenta",
-      "cyan", "white", [256] = "#cccccc", "#555555"},
-     7,
-     0,
-     256,
-     257},
-
     // Alacritty (dark)
     {{"#1d1f21", "#cc6666", "#b5bd68", "#f0c674", "#81a2be", "#b294bb",
       "#8abeb7", "#c5c8c6", "#666666", "#d54e53", "#b9ca4a", "#e7c547",
@@ -127,42 +118,22 @@ static const ColorScheme schemes[] = {
      0,
      256,
      257},
-
-    // One Half dark
-    {{"#282c34", "#e06c75", "#98c379", "#e5c07b", "#61afef", "#c678dd",
-      "#56b6c2", "#dcdfe4", "#282c34", "#e06c75", "#98c379", "#e5c07b",
-      "#61afef", "#c678dd", "#56b6c2", "#dcdfe4", [256] = "#cccccc", "#555555"},
-     7,
-     0,
-     256,
-     257},
-
-    // One Half light
-    {{"#fafafa", "#e45649", "#50a14f", "#c18401", "#0184bc", "#a626a4",
-      "#0997b3", "#383a42", "#fafafa", "#e45649", "#50a14f", "#c18401",
-      "#0184bc", "#a626a4", "#0997b3", "#383a42", [256] = "#cccccc", "#555555"},
-     7,
-     0,
-     256,
-     257},
-
-    // Solarized dark
-    {{"#073642", "#dc322f", "#859900", "#b58900", "#268bd2", "#d33682",
-      "#2aa198", "#eee8d5", "#002b36", "#cb4b16", "#586e75", "#657b83",
-      "#839496", "#6c71c4", "#93a1a1", "#fdf6e3", [256] = "#93a1a1", "#fdf6e3"},
-     12,
-     8,
-     256,
-     257},
-
-    // Solarized light
-    {{"#eee8d5", "#dc322f", "#859900", "#b58900", "#268bd2", "#d33682",
-      "#2aa198", "#073642", "#fdf6e3", "#cb4b16", "#93a1a1", "#839496",
-      "#657b83", "#6c71c4", "#586e75", "#002b36", [256] = "#586e75", "#002b36"},
-     12,
-     8,
-     256,
-     257},
+    {{
+      // 8 normal colors
+      "#45475A", "#F38BA8", "#A6E3A1", "#F9E2AF", 
+      "#89B4FA", "#F5C2E7", "#94E2D5", "#BAC2DE",
+      // 8 bright colors
+      "#585B70", "#F38BA8", "#A6E3A1", "#F9E2AF", 
+      "#89B4FA", "#F5C2E7", "#94E2D5", "#A6ADC8",
+      // 232 more colors...
+      [256] = "#CDD6F4", /* default foreground colour */
+      [257] = "#1E1E2E", /* default background colour */
+    },
+     256, /* defaultfg */
+     257, /* defaultbg */
+     256, /* defaultcs */
+     258  /* defaultrcs */
+    },
 };
 
 static const char *const *colorname;
